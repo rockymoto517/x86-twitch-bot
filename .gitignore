@@ -1,0 +1,6 @@
+makefile
+.cache/*
+.xmake/*
+build/*
+src/old/*
+compile_commands.json
