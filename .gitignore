@@ -3,4 +3,6 @@ makefile
 .xmake/*
 build/*
 src/old/*
+src/constants.hpp
+certs/*
 compile_commands.json
