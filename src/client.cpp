@@ -2,23 +2,11 @@
 
 #include <fmt/printf.h>
 
-#include <algorithm>
 #include <boost/asio/ssl/context.hpp>
-#include <chrono>
 #include <ctime>
 #include <nlohmann/json.hpp>
 
 #include "constants.hpp"
-
-namespace asio = boost::asio;
-
-static inline void strip_quotes(std::string &str) {
-    str.erase(std::remove(str.begin(), str.end(), '\"'), str.end());
-}
-
-static inline void strip_escapes(std::string &str) {
-    str.erase(std::remove(str.begin(), str.end(), '\\'), str.end());
-}
 
 connection_metadata::connection_metadata(int id,
                                          websocketpp::connection_hdl hdl,
@@ -72,10 +60,6 @@ int connection_metadata::get_id() const { return m_id; }
 
 std::string connection_metadata::get_status() const { return m_status; }
 
-void connection_metadata::record_sent_message(std::string message) {
-    m_messages.push(">> " + message);
-}
-
 std::string connection_metadata::pop() {
     std::string msg = m_messages.front();
     m_messages.pop();
@@ -85,15 +69,15 @@ std::string connection_metadata::pop() {
 bool connection_metadata::empty() { return m_messages.empty(); }
 
 context_ptr on_tls_init(const char *hostname, websocketpp::connection_hdl) {
-    context_ptr ctx = websocketpp::lib::make_shared<asio::ssl::context>(
-        asio::ssl::context::tlsv12);
+    context_ptr ctx = websocketpp::lib::make_shared<boost::asio::ssl::context>(
+        boost::asio::ssl::context::tlsv12);
     try {
-        ctx->set_options(asio::ssl::context::default_workarounds |
-                         asio::ssl::context::no_sslv2 |
-                         asio::ssl::context::no_sslv3 |
-                         asio::ssl::context::single_dh_use);
+        ctx->set_options(boost::asio::ssl::context::default_workarounds |
+                         boost::asio::ssl::context::no_sslv2 |
+                         boost::asio::ssl::context::no_sslv3 |
+                         boost::asio::ssl::context::single_dh_use);
 
-        ctx->set_verify_mode(asio::ssl::verify_none);
+        ctx->set_verify_mode(boost::asio::ssl::verify_none);
     } catch (std::exception &e) {
         fmt::print("Exception:\n{}\n", e.what());
     }
@@ -138,13 +122,13 @@ websocket_endpoint::~websocket_endpoint() {
             continue;
         }
 
-        fmt::print("> Closing connection {}\n", it->second->get_id());
+        fmt::print("Closing connection {}\n", it->second->get_id());
 
         websocketpp::lib::error_code ec;
         m_endpoint.close(it->second->get_hdl(),
                          websocketpp::close::status::going_away, "", ec);
         if (ec) {
-            fmt::print("> Error closing connection {}: {}\n",
+            fmt::print("Error closing connection {}: {}\n",
                        it->second->get_id(), ec.message());
         }
     }
@@ -158,7 +142,7 @@ int websocket_endpoint::connect(std::string const &uri) {
     client::connection_ptr con = m_endpoint.get_connection(uri, ec);
 
     if (ec) {
-        fmt::print("> Connection initialization error: {}\n", ec.message());
+        fmt::print("Connection initialization error: {}\n", ec.message());
         return -1;
     }
 
@@ -193,47 +177,14 @@ void websocket_endpoint::close(int id, websocketpp::close::status::value code,
 
     con_list::iterator metadata_it = m_connection_list.find(id);
     if (metadata_it == m_connection_list.end()) {
-        fmt::print("> No connection found with id {}\n", id);
+        fmt::print("No connection found with id {}\n", id);
         return;
     }
 
     m_endpoint.close(metadata_it->second->get_hdl(), code, reason, ec);
     if (ec) {
-        fmt::print("> Error initiating close: {}\n", ec.message());
+        fmt::print("Error initiating close: {}\n", ec.message());
     }
-}
-
-void websocket_endpoint::send(int id, std::string message) {
-    websocketpp::lib::error_code ec;
-
-    con_list::iterator metadata_it = m_connection_list.find(id);
-    if (metadata_it == m_connection_list.end()) {
-        fmt::print("> No connection found with id {}\n", id);
-        return;
-    }
-
-    m_endpoint.send(metadata_it->second->get_hdl(), message,
-                    websocketpp::frame::opcode::text, ec);
-    if (ec) {
-        fmt::print("> Error sending message: {}\n", ec.message());
-        return;
-    }
-}
-
-void websocket_endpoint::heartbeat(int id) {
-    for (;;) {
-        send(id, PING);
-        std::this_thread::sleep_for(std::chrono::seconds(10));
-    }
-}
-
-void websocket_endpoint::add_scopes(int id, const std::string &channel_id,
-                                    const std::string &token) {
-    std::string oauth_string("PASS oauth:");
-    oauth_string += OAUTH;
-    send(id, oauth_string);
-    send(id, "NICK PaydayChaosBot");
-    send(id, "JOIN #rockymoto377");
 }
 
 connection_metadata::ptr websocket_endpoint::get_metadata(int id) const {

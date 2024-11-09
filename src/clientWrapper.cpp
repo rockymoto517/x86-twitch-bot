@@ -33,8 +33,6 @@ std::string w_twitch::get_msg() {
     return "";
 }
 
-void w_twitch::send_msg(std::string &msg) { endpoint.send(id, msg); }
-
 bool w_twitch::update_keepalive(uint32_t timestamp) {
     if (keepalive == 0) {
         keepalive = timestamp;

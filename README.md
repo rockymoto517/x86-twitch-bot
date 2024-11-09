@@ -17,6 +17,8 @@ For more information on build configuration, see:
 xmake f -h
 ```
 
+Finally, edit the fields in `src/constants.hpp` to match your configuration.
+
 ### Building
 In order to build this project, use:
 ```

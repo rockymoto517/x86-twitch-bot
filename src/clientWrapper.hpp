@@ -21,7 +21,6 @@ class w_twitch {
     w_twitch(const std::string &name);
     ~w_twitch();
     std::string get_msg();
-    void send_msg(std::string &);
     void end_threads();
     bool update_keepalive(uint32_t);
     void store_message(const std::string &, const std::string &);
