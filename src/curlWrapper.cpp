@@ -155,7 +155,6 @@ std::optional<std::string> subscribe(const std::string &session_id) {
     curl = curl_easy_init();
     if (curl) {
         VERBOSE(curl);
-        curl_easy_setopt(curl, CURLOPT_VERBOSE);
         res = curl_easy_setopt(curl, CURLOPT_URL, EVENTSUB_URL.c_str());
         if (res != CURLE_OK) {
             fmt::print("Error setting URL:\n{}\n", curl_easy_strerror(res));
@@ -200,7 +199,6 @@ std::optional<std::string> subscribe(const std::string &session_id) {
         events["transport"] =
             json({{"method", "websocket"}, {"session_id", session_id}});
         std::string dump = events.dump();
-        fmt::print("{}\n", dump.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, dump.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, dump.length());
 
@@ -231,7 +229,6 @@ std::optional<std::string> get_token() {
     curl = curl_easy_init();
     if (curl) {
         VERBOSE(curl);
-        curl_easy_setopt(curl, CURLOPT_VERBOSE);
         res = curl_easy_setopt(curl, CURLOPT_URL,
                                "https://id.twitch.tv/oauth2/token");
         if (res != CURLE_OK) {

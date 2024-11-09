@@ -59,7 +59,6 @@ void connection_metadata::on_close(client *c, websocketpp::connection_hdl hdl) {
 void connection_metadata::on_message(websocketpp::connection_hdl,
                                      client::message_ptr msg) {
     if (msg->get_opcode() == websocketpp::frame::opcode::text) {
-        fmt::print("{}\n", msg->get_payload());
         std::string s_payload = msg->get_payload();
         m_messages.push(s_payload);
     }

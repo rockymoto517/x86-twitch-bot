@@ -24,7 +24,7 @@ w_twitch::w_twitch(const std::string &name) : channel_name(name) {
     }
 }
 
-w_twitch::~w_twitch() { end_threads(); }
+w_twitch::~w_twitch() {}
 
 std::string w_twitch::get_msg() {
     if (!endpoint.queue_empty(id)) {
@@ -34,11 +34,6 @@ std::string w_twitch::get_msg() {
 }
 
 void w_twitch::send_msg(std::string &msg) { endpoint.send(id, msg); }
-
-void w_twitch::end_threads() {
-    t->join();
-    delete t;
-}
 
 bool w_twitch::update_keepalive(uint32_t timestamp) {
     if (keepalive == 0) {
@@ -55,4 +50,17 @@ bool w_twitch::update_keepalive(uint32_t timestamp) {
             return false;
         }
     }
+}
+
+void w_twitch::store_message(const std::string &msg, const std::string &usr) {
+    chat_messages.push({msg, usr});
+}
+
+std::pair<std::string, std::string> w_twitch::get_message() {
+    if (chat_messages.empty()) {
+        return {"", ""};
+    }
+    std::pair front = chat_messages.front();
+    chat_messages.pop();
+    return front;
 }

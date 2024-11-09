@@ -9,6 +9,22 @@
 using json = nlohmann::json;
 static w_twitch *bot = nullptr;
 
+void main_loop() {
+    bot = new w_twitch("rockytestdll3");
+    while (true) {
+        if (!Bot::do_loop(bot)) {
+            fmt::print("Disconnected.\n");
+            delete bot;
+            break;
+        } else {
+            auto [usr, msg] = bot->get_message();
+            if (usr != "") {
+                fmt::print("{}: {}\n", msg, usr);
+            }
+        }
+    }
+}
+
 int main() {
     try {
         std::optional<std::string> res = Curl::get_auth(AUTH_URL);
@@ -19,16 +35,10 @@ int main() {
                 fmt::print("Status code: {}\n", status);
             }
         }
+        // std::thread loop_thread(main_loop);
+        main_loop();
 
-        bot = new w_twitch("rockytestdll3");
-        while (true) {
-            if (!Bot::do_loop(bot)) {
-                fmt::print("Disconnected.\n");
-                delete bot;
-                break;
-            }
-        }
     } catch (std::exception &e) {
-        fmt::print("Exception: {}\n", e.what());
+        fmt::print("Exception in main: {}\n", e.what());
     }
 }

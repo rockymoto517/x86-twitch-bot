@@ -1,6 +1,7 @@
 #pragma once
 
-#include <thread>
+#include <queue>
+#include <utility>
 
 #include "client.hpp"
 
@@ -9,9 +10,9 @@ class w_twitch {
     websocket_endpoint endpoint;
     std::string channel_name;
     std::string channel_id;
-    std::thread *t;
     int id;
     uint32_t keepalive = 0;
+    std::queue<std::pair<std::string, std::string>> chat_messages;
 
    public:
     std::string session_id;
@@ -23,4 +24,6 @@ class w_twitch {
     void send_msg(std::string &);
     void end_threads();
     bool update_keepalive(uint32_t);
+    void store_message(const std::string &, const std::string &);
+    std::pair<std::string, std::string> get_message();
 };
