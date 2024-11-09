@@ -9,4 +9,5 @@ std::optional<std::string> get_auth(const std::string &);
 std::optional<std::string> login(const std::string &);
 std::optional<std::string> subscribe(const std::string &);
 std::optional<std::string> get_token();
+std::optional<std::string> refresh_token();
 };  // namespace Curl

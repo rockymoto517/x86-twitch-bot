@@ -4,7 +4,6 @@
 #include <fmt/format.h>
 #include <fmt/printf.h>
 
-#include <algorithm>
 #include <nlohmann/json.hpp>
 
 #include "constants.hpp"
@@ -18,6 +17,16 @@
 
 namespace Curl {
 using json = nlohmann::json;
+static std::string OAUTH_TOKEN = "";
+
+void set_token(const std::string &res_string) {
+    json res = json::parse(res_string);
+    if (res.contains("access_token")) {
+        OAUTH_TOKEN = res["access_token"].template get<std::string>();
+    } else {
+        fmt::print("Error refreshing OAuth token.\n");
+    }
+}
 
 size_t _response_callback(void *content, size_t size, size_t nmemb,
                           std::string *data) {
@@ -79,7 +88,6 @@ std::optional<std::string> get_auth(const std::string &url) {
         curl_global_cleanup();
 
         return response;
-        curl_global_cleanup();
     }
     curl_global_cleanup();
     return std::nullopt;
@@ -141,7 +149,6 @@ std::optional<std::string> login(const std::string &login) {
         curl_global_cleanup();
 
         return response;
-        curl_global_cleanup();
     }
     curl_global_cleanup();
     return std::nullopt;
@@ -215,7 +222,6 @@ std::optional<std::string> subscribe(const std::string &session_id) {
         curl_global_cleanup();
 
         return response;
-        curl_global_cleanup();
     }
     curl_global_cleanup();
     return std::nullopt;
@@ -283,7 +289,73 @@ std::optional<std::string> get_token() {
         curl_global_cleanup();
 
         return response;
+    }
+    curl_global_cleanup();
+    return std::nullopt;
+}
+
+std::optional<std::string> refresh_token() {
+    CURL *curl;
+    CURLcode res;
+
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    if (curl) {
+        VERBOSE(curl);
+        res = curl_easy_setopt(curl, CURLOPT_URL,
+                               "https://id.twitch.tv/oauth2/token");
+        if (res != CURLE_OK) {
+            fmt::print("Error setting URL:\n{}\n", curl_easy_strerror(res));
+        }
+        // Cert verification
+        res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        if (res != CURLE_OK) {
+            fmt::print("Error verifying peer:\n{}\n", curl_easy_strerror(res));
+        }
+        res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+        if (res != CURLE_OK) {
+            fmt::print("Error verifying host:\n{}\n", curl_easy_strerror(res));
+        }
+        // Cache the verification for 1 week
+        res = curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
+        if (res != CURLE_OK) {
+            fmt::print("Error setting cache timeout:\n{}\n",
+                       curl_easy_strerror(res));
+        }
+
+        // Setup callback to get response data
+        std::string response;
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _response_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+        // Set auth headers
+        struct curl_slist *headers = nullptr;
+        headers = curl_slist_append(
+            headers, "Content-Type: application/x-www-form-urlencoded");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        std::string body = fmt::format(
+            "client_id={}&client_secret={}&grant_type=refresh_token&refresh_"
+            "token={}",
+            BOT_CLIENT_ID, SECRET, REFRESH_TOKEN);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+
+        // Perform the request
+        res = curl_easy_perform(curl);
+        if (res != CURLE_OK) {
+            fmt::print("Error performing get request:\n{}\n",
+                       curl_easy_strerror(res));
+        } else {
+            set_token(response);
+        }
+
+        // Cleanup
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
         curl_global_cleanup();
+
+        return response;
     }
     curl_global_cleanup();
     return std::nullopt;

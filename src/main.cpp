@@ -27,6 +27,8 @@ void main_loop() {
 
 int main() {
     try {
+        std::string test = Curl::refresh_token().value();
+        fmt::print("{}\n", test);
         std::optional<std::string> res = Curl::get_auth(AUTH_URL);
         if (res) {
             json resJson = json::parse(res.value());

@@ -4,7 +4,7 @@
 const std::string BOT_USER_ID = "";
 const std::string BOT_CLIENT_ID = "";
 const std::string SECRET = "";
-const std::string OAUTH_TOKEN = "";
+const std::string REFRESH_TOKEN = "";
 const std::string CHANNEL_ID = "";
 const std::string AUTH_URL = "https://id.twitch.tv/oauth2/validate";
 const std::string WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
