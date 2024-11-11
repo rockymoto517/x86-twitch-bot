@@ -5,8 +5,8 @@ set_project("twitch_bot")
 local libs = {
 	"libcurl",
 	"openssl",
-	"vcpkg::boost-random",
-	"vcpkg::websocketpp",
+	"vcpkg::boost-random", -- Not available in the xmake package manager
+	"vcpkg::websocketpp", -- Also not available in xrepo...
 	"fmt",
 	"nlohmann_json",
 }
@@ -19,6 +19,7 @@ set_arch("x86")
 set_languages("c++17")
 
 add_files("src/*.cpp")
+add_includedirs("include")
 
 add_packages(table.unpack(libs))
 target_end()

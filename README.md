@@ -1,7 +1,7 @@
 # Compiling
 This projecect depends on [xmake](https://xmake.io/#/getting_started) and [vcpkg](https://github.com/microsoft/vcpkg).
 
-### Setup
+## Setup
 First, download the requirements using:
 ```
 xmake require
@@ -17,9 +17,10 @@ For more information on build configuration, see:
 xmake f -h
 ```
 
-Finally, edit the fields in `src/constants.hpp` to match your configuration.
+#### IMPORTANT
+Before building, change `include/constants.hpp.example` to `include/constants.hpp` and edit the fields in to match your configuration.
 
-### Building
+## Building
 In order to build this project, use:
 ```
 xmake
