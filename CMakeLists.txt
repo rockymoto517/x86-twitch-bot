@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
 
+# vcpkg setup
+set(VCPKG_TARGET_ARCHITECTURE x86)
+set(VCPKG_CRT_LINKAGE static)
+set(VCPKG_LIBRARY_LINKAGE static)
+set(VCPKG_TARGET_TRIPLET x86-windows-static)
+
 project(TwitchBot VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -15,11 +21,7 @@ add_compile_definitions(_WIN32)
 file(GLOB_RECURSE sources src/*.cpp)
 add_executable(twitch_bot ${sources})
 target_include_directories(twitch_bot PUBLIC include)
-
-# vcpkg setup
-set(VCPKG_TARGET_ARCHITECTURE x86)
-set(VCPKG_CRT_LINKAGE static)
-set(VCPKG_LIBRARY_LINKAGE static)
+set_property(TARGET twitch_bot PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # cURL
 option(CURL_STATICLIB ON)
