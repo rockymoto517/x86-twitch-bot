@@ -6,3 +6,5 @@ src/old/*
 include/constants.hpp
 certs/*
 compile_commands.json
+CMakeUserPresets.json
+build.bat

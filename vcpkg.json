@@ -1,0 +1,10 @@
+{
+  "dependencies": [
+    "curl",
+    "openssl",
+    "boost-random",
+    "websocketpp",
+    "fmt",
+    "nlohmann-json"
+  ]
+}
