@@ -1,6 +1,7 @@
 #include "botFuncs.hpp"
 
-#include <fmt/printf.h>
+#include <fmt/format.h>
+#include <superblt_flat.h>
 
 #include <chrono>
 #include <cstdint>
@@ -30,9 +31,11 @@ void init_session(w_twitch *bot, const json &res) {
             .template get<uint32_t>();
     std::string _ = Curl::get_token().value();
     _ = Curl::subscribe(bot->session_id).value();
-    fmt::print(
-        "Session token acquired and scopes subscribed. Receiving messages "
-        "now.\n");
+    PD2HOOK_LOG_LOG(
+        fmt::format(
+            "Session token acquired and scopes subscribed. Receiving messages "
+            "now.\n")
+            .c_str());
 }
 
 // Eventually update this to check even if no keepalive message was sent
@@ -47,17 +50,20 @@ bool check_keep_alive(const json &res, w_twitch *bot) {
 // Grab the message from the EventSub notification
 void handle_notification(const json &res, w_twitch *bot) {
     if (!res.contains("event")) {
-        fmt::print("Error: No payload event found.\n");
+        PD2HOOK_LOG_LOG(
+            fmt::format("Error: No payload event found.\n").c_str());
         return;
     }
 
     if (!res["event"].contains("message")) {
-        fmt::print("Error: Payload contains no message.\n");
+        PD2HOOK_LOG_LOG(
+            fmt::format("Error: Payload contains no message.\n").c_str());
         return;
     }
 
     if (!res["event"]["message"].contains("text")) {
-        fmt::print("Error: Payload message contains no test.\n");
+        PD2HOOK_LOG_LOG(
+            fmt::format("Error: Payload message contains no test.\n").c_str());
         return;
     }
 
@@ -95,7 +101,9 @@ bool do_loop(w_twitch *bot) {
                 if (res.contains("payload")) {
                     handle_notification(res["payload"], bot);
                 } else {
-                    fmt::print("Error: no notification payload.\n");
+                    PD2HOOK_LOG_LOG(
+                        fmt::format("Error: no notification payload.\n")
+                            .c_str());
                 }
                 return true;
             }

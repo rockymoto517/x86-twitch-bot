@@ -2,7 +2,7 @@
 
 #include <curl/curl.h>
 #include <fmt/format.h>
-#include <fmt/printf.h>
+#include <superblt_flat.h>
 
 #include <nlohmann/json.hpp>
 
@@ -24,7 +24,7 @@ void set_token(const std::string &res_string) {
     if (res.contains("access_token")) {
         OAUTH_TOKEN = res["access_token"].template get<std::string>();
     } else {
-        fmt::print("Error refreshing OAuth token.\n");
+        PD2HOOK_LOG_LOG(fmt::format("Error refreshing OAuth token.\n").c_str());
     }
 }
 
@@ -45,22 +45,29 @@ std::optional<std::string> get_auth(const std::string &url) {
         VERBOSE(curl);
         res = curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         if (res != CURLE_OK) {
-            fmt::print("Error setting URL:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(
+                fmt::format("Error setting URL:\n{}\n", curl_easy_strerror(res))
+                    .c_str());
         }
         // Cert verification
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying peer:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying peer:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying host:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying host:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         // Cache the verification for 1 week
         res = curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
         if (res != CURLE_OK) {
-            fmt::print("Error setting cache timeout:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error setting cache timeout:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
 
         // Setup callback to get response data
@@ -78,8 +85,9 @@ std::optional<std::string> get_auth(const std::string &url) {
         // Perform the request
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            fmt::print("Error performing get request:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error performing get request:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
 
         // Cleanup
@@ -104,22 +112,29 @@ std::optional<std::string> login(const std::string &login) {
         std::string url = LOGIN_URL_PREFIX + login;
         res = curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         if (res != CURLE_OK) {
-            fmt::print("Error setting URL:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(
+                fmt::format("Error setting URL:\n{}\n", curl_easy_strerror(res))
+                    .c_str());
         }
         // Cert verification
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying peer:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying peer:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying host:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying host:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         // Cache the verification for 1 week
         res = curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
         if (res != CURLE_OK) {
-            fmt::print("Error setting cache timeout:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error setting cache timeout:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
 
         // Setup callback to get response data
@@ -139,8 +154,9 @@ std::optional<std::string> login(const std::string &login) {
         // Perform the request
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            fmt::print("Error performing get request:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error performing get request:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
 
         // Cleanup
@@ -164,22 +180,29 @@ std::optional<std::string> subscribe(const std::string &session_id) {
         VERBOSE(curl);
         res = curl_easy_setopt(curl, CURLOPT_URL, EVENTSUB_URL.c_str());
         if (res != CURLE_OK) {
-            fmt::print("Error setting URL:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(
+                fmt::format("Error setting URL:\n{}\n", curl_easy_strerror(res))
+                    .c_str());
         }
         // Cert verification
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying peer:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying peer:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying host:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying host:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         // Cache the verification for 1 week
         res = curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
         if (res != CURLE_OK) {
-            fmt::print("Error setting cache timeout:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error setting cache timeout:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
 
         // Setup callback to get response data
@@ -212,8 +235,9 @@ std::optional<std::string> subscribe(const std::string &session_id) {
         // Perform the request
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            fmt::print("Error performing get request:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error performing get request:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
 
         // Cleanup
@@ -238,22 +262,29 @@ std::optional<std::string> get_token() {
         res = curl_easy_setopt(curl, CURLOPT_URL,
                                "https://id.twitch.tv/oauth2/token");
         if (res != CURLE_OK) {
-            fmt::print("Error setting URL:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(
+                fmt::format("Error setting URL:\n{}\n", curl_easy_strerror(res))
+                    .c_str());
         }
         // Cert verification
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying peer:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying peer:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying host:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying host:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         // Cache the verification for 1 week
         res = curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
         if (res != CURLE_OK) {
-            fmt::print("Error setting cache timeout:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error setting cache timeout:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
 
         // Setup callback to get response data
@@ -279,8 +310,9 @@ std::optional<std::string> get_token() {
         // Perform the request
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            fmt::print("Error performing get request:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error performing get request:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
 
         // Cleanup
@@ -305,22 +337,29 @@ std::optional<std::string> refresh_token() {
         res = curl_easy_setopt(curl, CURLOPT_URL,
                                "https://id.twitch.tv/oauth2/token");
         if (res != CURLE_OK) {
-            fmt::print("Error setting URL:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(
+                fmt::format("Error setting URL:\n{}\n", curl_easy_strerror(res))
+                    .c_str());
         }
         // Cert verification
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying peer:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying peer:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
         if (res != CURLE_OK) {
-            fmt::print("Error verifying host:\n{}\n", curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error verifying host:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
         // Cache the verification for 1 week
         res = curl_easy_setopt(curl, CURLOPT_CA_CACHE_TIMEOUT, 604800L);
         if (res != CURLE_OK) {
-            fmt::print("Error setting cache timeout:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error setting cache timeout:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         }
 
         // Setup callback to get response data
@@ -344,8 +383,9 @@ std::optional<std::string> refresh_token() {
         // Perform the request
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            fmt::print("Error performing get request:\n{}\n",
-                       curl_easy_strerror(res));
+            PD2HOOK_LOG_LOG(fmt::format("Error performing get request:\n{}\n",
+                                        curl_easy_strerror(res))
+                                .c_str());
         } else {
             set_token(response);
         }

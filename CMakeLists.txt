@@ -18,10 +18,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_definitions(WIN32)
 add_compile_definitions(_WIN32)
 
+# Create target
 file(GLOB_RECURSE sources src/*.cpp)
-add_executable(twitch_bot ${sources})
+add_library(twitch_bot SHARED ${sources})
 target_include_directories(twitch_bot PUBLIC include)
 set_property(TARGET twitch_bot PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+# Link to SuperBLT
+target_link_libraries(twitch_bot PRIVATE ${PROJECT_SOURCE_DIR}/lib/sblt_plugin.lib)
 
 # cURL
 option(CURL_STATICLIB ON)

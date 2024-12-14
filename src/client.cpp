@@ -1,6 +1,7 @@
 #include "client.hpp"
 
-#include <fmt/printf.h>
+#include <fmt/format.h>
+#include <superblt_flat.h>
 
 #include <boost/asio/ssl/context.hpp>
 #include <ctime>
@@ -22,7 +23,7 @@ void connection_metadata::on_open(client *c, websocketpp::connection_hdl hdl) {
 
     client::connection_ptr con = c->get_con_from_hdl(hdl);
     m_server = con->get_response_header("Server");
-    fmt::print("Connection established.\n");
+    PD2HOOK_LOG_LOG("Connection established.");
 }
 
 void connection_metadata::on_fail(client *c, websocketpp::connection_hdl hdl) {
@@ -41,7 +42,7 @@ void connection_metadata::on_close(client *c, websocketpp::connection_hdl hdl) {
       << websocketpp::close::status::get_string(con->get_remote_close_code())
       << "), close reason: " << con->get_remote_close_reason();
     m_error_reason = s.str();
-    fmt::print("Connection closed.\n");
+    PD2HOOK_LOG_LOG("Connection closed.");
 }
 
 void connection_metadata::on_message(websocketpp::connection_hdl,
@@ -79,7 +80,7 @@ context_ptr on_tls_init(const char *hostname, websocketpp::connection_hdl) {
 
         ctx->set_verify_mode(boost::asio::ssl::verify_none);
     } catch (std::exception &e) {
-        fmt::print("Exception:\n{}\n", e.what());
+        PD2HOOK_LOG_LOG(fmt::format("Exception:\n{}\n", e.what()).c_str());
     }
     return ctx;
 }
@@ -122,14 +123,17 @@ websocket_endpoint::~websocket_endpoint() {
             continue;
         }
 
-        fmt::print("Closing connection {}\n", it->second->get_id());
+        PD2HOOK_LOG_LOG(
+            fmt::format("Closing connection {}\n", it->second->get_id())
+                .c_str());
 
         websocketpp::lib::error_code ec;
         m_endpoint.close(it->second->get_hdl(),
                          websocketpp::close::status::going_away, "", ec);
         if (ec) {
-            fmt::print("Error closing connection {}: {}\n",
-                       it->second->get_id(), ec.message());
+            PD2HOOK_LOG_LOG(fmt::format("Error closing connection {}: {}\n",
+                                        it->second->get_id(), ec.message())
+                                .c_str());
         }
     }
 
@@ -142,7 +146,9 @@ int websocket_endpoint::connect(std::string const &uri) {
     client::connection_ptr con = m_endpoint.get_connection(uri, ec);
 
     if (ec) {
-        fmt::print("Connection initialization error: {}\n", ec.message());
+        PD2HOOK_LOG_LOG(
+            fmt::format("Connection initialization error: {}\n", ec.message())
+                .c_str());
         return -1;
     }
 
@@ -177,13 +183,15 @@ void websocket_endpoint::close(int id, websocketpp::close::status::value code,
 
     con_list::iterator metadata_it = m_connection_list.find(id);
     if (metadata_it == m_connection_list.end()) {
-        fmt::print("No connection found with id {}\n", id);
+        PD2HOOK_LOG_LOG(
+            fmt::format("No connection found with id {}\n", id).c_str());
         return;
     }
 
     m_endpoint.close(metadata_it->second->get_hdl(), code, reason, ec);
     if (ec) {
-        fmt::print("Error initiating close: {}\n", ec.message());
+        PD2HOOK_LOG_LOG(
+            fmt::format("Error initiating close: {}\n", ec.message()).c_str());
     }
 }
 

@@ -1,6 +1,7 @@
 #include "clientWrapper.hpp"
 
 #include <fmt/printf.h>
+#include <superblt_flat.h>
 
 #include <cstdint>
 
@@ -11,8 +12,7 @@ w_twitch::w_twitch(const std::string &name) : channel_name(name) {
     Curl::login(name);
     id = endpoint.connect(WEBSOCKET_URL);
     if (id == -1) {
-        // PD2HOOK_LOG_LOG("Error opening socket.");
-        fmt::print("Error opening socket.\n");
+        PD2HOOK_LOG_LOG("Error opening socket.");
         return;
     }
 
