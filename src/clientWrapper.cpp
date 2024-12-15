@@ -8,8 +8,9 @@
 #include "constants.hpp"
 #include "curlWrapper.hpp"
 
-w_twitch::w_twitch(const std::string &name) : channel_name(name) {
-    Curl::login(name);
+w_twitch::w_twitch(const std::string &name, const std::string &bot_client_id)
+    : channel_name(name) {
+    Curl::login(name, bot_client_id);
     id = endpoint.connect(WEBSOCKET_URL);
     if (id == -1) {
         PD2HOOK_LOG_LOG("Error opening socket.");

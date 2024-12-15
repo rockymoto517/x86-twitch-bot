@@ -14,7 +14,8 @@ namespace Bot {
 using json = nlohmann::json;
 
 // Don't nest the ifs so the code is actually readable...
-void init_session(w_twitch *bot, const json &res) {
+void init_session(w_twitch *bot, const json &res, const std::string &channel_id,
+                  const std::string &bot_client_id, const std::string &secret) {
     if (!res.contains("payload")) throw("Error finding initializer payload.");
     if (!res["payload"].contains("session"))
         throw("Error finding initializer payload.");
@@ -29,8 +30,8 @@ void init_session(w_twitch *bot, const json &res) {
     bot->keepalive_timeout =
         res["payload"]["session"]["keepalive_timeout_seconds"]
             .template get<uint32_t>();
-    std::string _ = Curl::get_token().value();
-    _ = Curl::subscribe(bot->session_id).value();
+    std::string _ = Curl::get_token(bot_client_id, secret).value();
+    _ = Curl::subscribe(bot->session_id, channel_id, bot_client_id).value();
     PD2HOOK_LOG_LOG(
         fmt::format(
             "Session token acquired and scopes subscribed. Receiving messages "
@@ -80,7 +81,8 @@ void handle_notification(const json &res, w_twitch *bot) {
 // Meat and potatoes of the boat, handles every message
 // Returns false if the bot disconnects
 // Returns true else
-bool do_loop(w_twitch *bot) {
+bool do_loop(w_twitch *bot, const std::string &channel_id,
+             const std::string &bot_client_id, const std::string &secret) {
     std::string msg = bot->get_msg();
     if (msg == "") return true;
 
@@ -89,7 +91,7 @@ bool do_loop(w_twitch *bot) {
         if (res["metadata"].contains("message_type")) {
             if (res["metadata"]["message_type"].template get<std::string>() ==
                 "session_welcome") {
-                init_session(bot, res);
+                init_session(bot, res, channel_id, bot_client_id, secret);
                 return true;
             }
             if (res["metadata"]["message_type"].template get<std::string>() ==

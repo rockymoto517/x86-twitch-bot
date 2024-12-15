@@ -10,7 +10,7 @@ project(TwitchBot VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE debug)
+set(CMAKE_BUILD_TYPE release)
 
 # For convenience's sake
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -54,4 +54,4 @@ find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(twitch_bot PRIVATE nlohmann_json::nlohmann_json)
 
 # Link to SuperBLT
-target_link_libraries(twitch_bot PRIVATE ${PROJECT_SOURCE_DIR}/lib/sblt_plugin_debug.lib)
+target_link_libraries(twitch_bot PRIVATE ${PROJECT_SOURCE_DIR}/lib/sblt_plugin.lib)

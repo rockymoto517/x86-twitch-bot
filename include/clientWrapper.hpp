@@ -18,7 +18,7 @@ class w_twitch {
     std::string session_id;
     uint32_t keepalive_timeout;
 
-    w_twitch(const std::string &name);
+    w_twitch(const std::string &, const std::string &);
     ~w_twitch();
     std::string get_msg();
     void end_threads();

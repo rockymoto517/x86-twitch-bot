@@ -101,7 +101,8 @@ std::optional<std::string> get_auth(const std::string &url) {
     return std::nullopt;
 }
 
-std::optional<std::string> login(const std::string &login) {
+std::optional<std::string> login(const std::string &login,
+                                 const std::string &bot_client_id) {
     CURL *curl;
     CURLcode res;
 
@@ -148,7 +149,7 @@ std::optional<std::string> login(const std::string &login) {
             headers,
             fmt::format("Authorization: Bearer {}", OAUTH_TOKEN).c_str());
         headers = curl_slist_append(
-            headers, fmt::format("Client-Id: {}", BOT_CLIENT_ID).c_str());
+            headers, fmt::format("Client-Id: {}", bot_client_id).c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
         // Perform the request
@@ -170,7 +171,9 @@ std::optional<std::string> login(const std::string &login) {
     return std::nullopt;
 }
 
-std::optional<std::string> subscribe(const std::string &session_id) {
+std::optional<std::string> subscribe(const std::string &session_id,
+                                     const std::string &channel_id,
+                                     const std::string &bot_client_id) {
     CURL *curl;
     CURLcode res;
 
@@ -216,7 +219,7 @@ std::optional<std::string> subscribe(const std::string &session_id) {
             headers,
             fmt::format("Authorization: Bearer {}", OAUTH_TOKEN).c_str());
         headers = curl_slist_append(
-            headers, fmt::format("Client-Id: {}", BOT_CLIENT_ID).c_str());
+            headers, fmt::format("Client-Id: {}", bot_client_id).c_str());
         headers = curl_slist_append(headers, "Content-Type: application/json");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
@@ -225,7 +228,7 @@ std::optional<std::string> subscribe(const std::string &session_id) {
         events["type"] = "channel.chat.message";
         events["version"] = "1";
         events["condition"] = json(
-            {{"broadcaster_user_id", CHANNEL_ID}, {"user_id", BOT_USER_ID}});
+            {{"broadcaster_user_id", channel_id}, {"user_id", channel_id}});
         events["transport"] =
             json({{"method", "websocket"}, {"session_id", session_id}});
         std::string dump = events.dump();
@@ -251,7 +254,8 @@ std::optional<std::string> subscribe(const std::string &session_id) {
     return std::nullopt;
 }
 
-std::optional<std::string> get_token() {
+std::optional<std::string> get_token(const std::string &bot_client_id,
+                                     const std::string &secret) {
     CURL *curl;
     CURLcode res;
 
@@ -303,7 +307,7 @@ std::optional<std::string> get_token() {
 
         std::string body = fmt::format(
             "client_id={}&client_secret={}&grant_type=client_credentials",
-            BOT_CLIENT_ID, SECRET);
+            bot_client_id, secret);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
 
@@ -326,7 +330,9 @@ std::optional<std::string> get_token() {
     return std::nullopt;
 }
 
-std::optional<std::string> refresh_token() {
+std::optional<std::string> refresh_token(const std::string &bot_client_id,
+                                         const std::string &secret,
+                                         const std::string &refresh) {
     CURL *curl;
     CURLcode res;
 
@@ -376,7 +382,7 @@ std::optional<std::string> refresh_token() {
         std::string body = fmt::format(
             "client_id={}&client_secret={}&grant_type=refresh_token&refresh_"
             "token={}",
-            BOT_CLIENT_ID, SECRET, REFRESH_TOKEN);
+            bot_client_id, secret, refresh);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
 
