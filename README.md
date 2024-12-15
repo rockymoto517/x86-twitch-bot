@@ -1,3 +1,5 @@
+### NOTE:
+This branch is only for development as a native plugin for Payday 2, switch branches to use this as a standalone Twitch Chat bot.
 # Compiling
 This project depends on [cmake](https://cmake.org/) and [vcpkg](https://github.com/microsoft/vcpkg) and [ninja](https://ninja-build.org/).
 
