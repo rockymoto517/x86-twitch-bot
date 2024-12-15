@@ -8,3 +8,4 @@ certs/*
 compile_commands.json
 CMakeUserPresets.json
 build.bat
+lib/*.old

@@ -11,6 +11,7 @@ project(TwitchBot VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE release)
+
 # For convenience's sake
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -23,9 +24,6 @@ file(GLOB_RECURSE sources src/*.cpp)
 add_library(twitch_bot SHARED ${sources})
 target_include_directories(twitch_bot PUBLIC include)
 set_property(TARGET twitch_bot PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-
-# Link to SuperBLT
-target_link_libraries(twitch_bot PRIVATE ${PROJECT_SOURCE_DIR}/lib/sblt_plugin.lib)
 
 # cURL
 option(CURL_STATICLIB ON)
@@ -54,3 +52,6 @@ target_link_libraries(twitch_bot PRIVATE fmt::fmt)
 # nlohmann_json
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(twitch_bot PRIVATE nlohmann_json::nlohmann_json)
+
+# Link to SuperBLT
+target_link_libraries(twitch_bot PRIVATE ${PROJECT_SOURCE_DIR}/lib/sblt_plugin.lib)
