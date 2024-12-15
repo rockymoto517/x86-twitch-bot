@@ -1,37 +1,23 @@
 # Compiling
-This projecect depends on [xmake](https://xmake.io/#/getting_started) and [vcpkg](https://github.com/microsoft/vcpkg).
+This project depends on [cmake](https://cmake.org/) and [vcpkg](https://github.com/microsoft/vcpkg) and [ninja](https://ninja-build.org/).
 
-## Setup
-First, download the requirements using:
-```
-xmake require
-```
-
-Second, setup the platform and architecture you will be using. This project is meant to be used for x86 windows.
-```
-xmake f -m <debug|release> -p windows -a x86
-```
-
-For more information on build configuration, see:
-```
-xmake f -h
-```
-
-#### IMPORTANT
-Before building, change `include/constants.hpp.example` to `include/constants.hpp` and edit the fields in to match your configuration.
+The compiler used is the Visual C++ compiler provided by microsoft. In order to use it, you need to download Visual Studio, then open the `x86 Native Tools Command Prompt for VS 2022` and use that to run the build steps. If you instead opt to create solution files and build directly in Visual Studio, you can ignore this.
 
 ## Building
 In order to build this project, use:
 ```
-xmake
+cmake -B build -S . -G Ninja
 ```
 
-To run this project, use:
+Then, go into the newly created build folder and run:
 ```
-xmake run
+ninja
 ```
 
-To integrate with your IDE or LSP, use:
+If you want to instead use Visual Studio directly to build, use:
 ```
-xmake project -k <integration> --lsp=<lsp>
+cmake -B build -S .
 ```
+
+When opening the solution file, make sure that you're compiling for x86/Win32 and that the RuntimeLibrary set is `MT_Static<Release|Debug> (/MT or /MTd)`
+
