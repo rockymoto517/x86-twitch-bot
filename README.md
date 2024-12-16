@@ -1,6 +1,6 @@
 ### NOTE:
 This branch is only for development as a native plugin for Payday 2, switch branches to use this as a standalone Twitch Chat bot.
-# Compiling
+# Dependencies
 This project depends on [cmake](https://cmake.org/) and [vcpkg](https://github.com/microsoft/vcpkg) and [ninja](https://ninja-build.org/).
 
 The compiler used is the Visual C++ compiler provided by microsoft. In order to use it, you need to download Visual Studio, then open the `x86 Native Tools Command Prompt for VS 2022` and use that to run the build steps. If you instead opt to create solution files and build directly in Visual Studio, you can ignore this.
