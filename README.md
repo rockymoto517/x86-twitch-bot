@@ -1,5 +1,5 @@
 # Compiling
-This projecect depends on [xmake](https://xmake.io/#/getting_started) and [vcpkg](https://github.com/microsoft/vcpkg).
+This project depends on [xmake](https://xmake.io/#/getting_started) and [vcpkg](https://github.com/microsoft/vcpkg).
 
 ## Setup
 First, setup the platform and architecture you will be using. This project is meant to be used for x86 windows:
